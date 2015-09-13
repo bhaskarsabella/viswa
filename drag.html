@@ -1,0 +1,37 @@
+<style>
+.header {
+    background-color: #ccc;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    bottom: auto;
+}
+.outer {
+    background-color: #fff;
+    position: relative;
+    height: 100px;
+}
+.outer .banner {
+    font-size: 46px;
+}
+.outer .header {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
+    top: auto;
+}
+.content {
+    height: 1500px;
+    color: blue;
+    background-color: #fff;
+    margin-top: 100px;
+}
+</style>
+
+
+<div class="header">Header</div>
+<div class="outer">
+    <span class="banner">LOGO</span>
+    <div class="header">Header</div>
+</div>
+<div class="content">Content</div>
