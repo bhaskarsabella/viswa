@@ -1,0 +1,285 @@
+package com.jpmc.dashweb;
+
+import java.io.File;
+
+import javax.servlet.annotation.WebServlet;
+
+import com.jpmorgan.cib.gicbcommons.clientlookup.core.domain.ClientDetail;
+import com.jpmorgan.cib.gicbcommons.clientlookup.core.webservices.ClientLookupWSCaller;
+import com.jpmorgan.cib.gicbcommons.clientlookup.vaadin.lookup.component.ClientLookupWindow;
+import com.jpmorgan.vaadin.event.IListener;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.data.validator.NullValidator;
+import com.vaadin.server.FileResource;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+
+@SuppressWarnings("serial")
+@Title("DashWeb")
+@Theme("dashweb")
+public class DashwebUI extends UI {
+	
+	private TabSheet tabsheet = new TabSheet();
+	
+	@WebServlet(value = "/*", asyncSupported = true)
+	@VaadinServletConfiguration(productionMode = false, ui = DashwebUI.class)
+	public static class Servlet extends VaadinServlet {
+	}
+
+	@Override
+	protected void init(VaadinRequest request) {
+		
+		Responsive.makeResponsive(this);
+        addStyleName(ValoTheme.UI_WITH_MENU);
+		
+		/*final VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(true);
+		setContent(layout);*/
+
+		/*Button button = new Button("Click Me");
+		button.addClickListener(new Button.ClickListener() {
+			public void buttonClick(ClickEvent event) {
+			layout.addComponent(new Label("Thank you for clicking"));
+			}
+		});*/
+		
+		final ClientLookupWSCaller clientLookupWSCaller = new ClientLookupWSCaller();
+		clientLookupWSCaller.setUrlToService("https://dw-uat-na.jpmorgan.com/dw-services/services/clientLookUpService");
+		clientLookupWSCaller.setUserName("O183101");
+		clientLookupWSCaller.setPassword("G1bJanusUAT1");
+		
+		CssLayout container = new CssLayout();
+		
+		/*final Button button = new Button("Client Lookup");
+		final CheckBox chkBox = new CheckBox("Allow Maual Client Creation",false);
+		final TextField clientField = new TextField();
+		clientField.setWidth("325px");
+		clientField.setEnabled(true);
+		
+		container.addComponent(new Label("Client Lookup Demo"));
+		container.addComponent(clientField);
+		button.addClickListener(new Button.ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				
+				
+				final ClientLookupWindow clientLookupWindow = new ClientLookupWindow(UI.getCurrent(), "Client Lookup Window" ,"1175px","760px",clientLookupWSCaller);
+				
+				//clientLookupWindow.allowManualClientCreation(chkBox.getValue().booleanValue());
+				clientLookupWindow.init(clientField.getValue());
+				clientLookupWindow.getOkButtonEvent().addListener(new IListener<ClientDetail>() {
+					@Override
+					public void react(ClientDetail clientDetail) {
+						clientField.setValue(clientDetail.getClientName());
+					}
+				});	
+				
+				clientLookupWindow.getEvtManualClientLookup().addListener(new IListener<String>() {
+					@Override
+					public void react(String clientName) {
+						clientField.setValue(clientName);
+					}
+				});	
+
+			}
+		});
+		
+		container.addComponent(button);
+		container.addComponent(chkBox);*/
+		Responsive.makeResponsive(container);
+		CssLayout header = new CssLayout();
+		Responsive.makeResponsive(header);
+		header.setHeight(4, Unit.EM);
+		header.addStyleName("jpmBG");
+		
+		String basepath = VaadinService.getCurrent()
+                .getBaseDirectory().getAbsolutePath();
+
+		//Image as a file resource
+		FileResource resource = new FileResource(new File(basepath +
+		                      "/WEB-INF/images/jpmBG.gif"));
+		
+		//Show the image in the application
+		Image image = new Image("Image from file", resource);
+		header.addComponent(image);
+		container.addComponent(header);
+		
+		MenuBar menu = new MenuBar();
+		menu.setWidth(100,  Unit.PERCENTAGE);
+		MenuItem home = menu.addItem("Home", null);
+		home.addItem("My Deals/Transactions", new MenuBar.Command() {
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+		
+			}
+		});//basePath+"homePgDispl.do?viewTab="+IConstants.VIEW_TAB_MY_DEALS
+		home.addItem("My Preferences", new MenuBar.Command() {
+			
+			@Override
+			public void menuSelected(MenuItem selectedItem) {
+			}
+		});
+		
+		container.addComponent(menu);
+		HorizontalLayout spacer = new HorizontalLayout();
+		spacer.setWidth(100, Unit.PERCENTAGE);
+		spacer.setHeight(2, Unit.EM);
+		container.addComponent(spacer);
+		TabSheet tabs = new TabSheet();
+		Responsive.makeResponsive(tabs);
+		/* Client & Deal information for deals*/
+		
+		CssLayout clientDealInformation = new CssLayout();
+			
+		tabs.addTab(clientDealInformation, "Client & Deal information");
+		
+		HorizontalLayout formColumnLayout = new HorizontalLayout();
+		VerticalLayout column1 = new VerticalLayout();
+		VerticalLayout column2 = new VerticalLayout();
+		formColumnLayout.setSpacing(true);
+		column1.setSpacing(true);
+		column2.setSpacing(true);
+		formColumnLayout.setHeight(200, Unit.PIXELS);
+		formColumnLayout.setWidth(100, Unit.PERCENTAGE);
+		column1.setWidth(50, Unit.PERCENTAGE);
+		column1.setHeight(650, Unit.PIXELS);
+		column2.setWidth(50, Unit.PERCENTAGE);
+		column2.setHeight(650, Unit.PIXELS);
+		
+		formColumnLayout.addStyleName("padding_common");
+
+		FormLayout form = new FormLayout();
+		
+		TextField tf1 = new TextField("Deal Name");
+		tf1.setRequired(true);
+		tf1.addValidator(new NullValidator("Must be given", false));
+		tf1.setWidth(100, Unit.PERCENTAGE);
+		form.addComponent(tf1);
+		        
+		TextField tf2 = new TextField("Comments");
+		tf2.setWidth(100, Unit.PERCENTAGE);
+		form.addComponent(tf2);
+		        
+		TextField tf3 = new TextField("Estimated Fee");
+		tf3.setWidth(100, Unit.PERCENTAGE);
+		form.addComponent(tf3);
+		
+		column1.addComponent(form);
+		
+		FormLayout formCol2 = new FormLayout();
+		
+		TextField tf6 = new TextField("Deal Region");
+		tf6.setRequired(true);
+		tf6.addValidator(new NullValidator("Must be given", false));
+		tf6.setWidth(100, Unit.PERCENTAGE);
+		formCol2.addComponent(tf6);
+		        
+		TextField tf4 = new TextField("Deal Size");
+		tf4.setWidth(100, Unit.PERCENTAGE);
+		formCol2.addComponent(tf4);
+		        
+		
+		HorizontalLayout clientLookUpPanel = new HorizontalLayout();
+		clientLookUpPanel.setWidth(100, Unit.PERCENTAGE);
+		clientLookUpPanel.setCaption("Client");
+		final TextField clientField = new TextField();
+		clientLookUpPanel.addComponent(clientField);
+		clientField.setWidth(100, Unit.PERCENTAGE);
+		Button lookUp = new Button();
+		lookUp.setIcon(FontAwesome.USER);
+		lookUp.addClickListener(new Button.ClickListener() {
+			
+			@Override
+			public void buttonClick(ClickEvent event) {
+				final ClientLookupWindow clientLookupWindow = new ClientLookupWindow(UI.getCurrent(), "Client Lookup Window" ,"1175px","760px",clientLookupWSCaller);
+				
+				//clientLookupWindow.allowManualClientCreation(chkBox.getValue().booleanValue());
+				clientLookupWindow.init(clientField.getValue());
+				clientLookupWindow.getOkButtonEvent().addListener(new IListener<ClientDetail>() {
+					@Override
+					public void react(ClientDetail clientDetail) {
+						clientField.setValue(clientDetail.getClientName());
+					}
+				});	
+				
+				/*clientLookupWindow.getEvtManualClientLookup().addListener(new IListener<String>() {
+					@Override
+					public void react(String clientName) {
+						clientField.setValue(clientName);
+					}
+				});	*/
+
+			}
+		});
+		clientLookUpPanel.addComponent(clientField);
+		clientLookUpPanel.addComponent(lookUp);
+		
+		clientLookUpPanel.setComponentAlignment(clientField, Alignment.MIDDLE_LEFT);
+		clientLookUpPanel.setComponentAlignment(lookUp, Alignment.MIDDLE_RIGHT);
+		clientLookUpPanel.setExpandRatio(clientField, 90);
+		clientLookUpPanel.setExpandRatio(lookUp, 10);
+		
+		formCol2.addComponent(clientLookUpPanel);
+		column2.addComponent(formCol2);
+		
+		HorizontalLayout buttons = new HorizontalLayout();
+		buttons.setWidth(100, Unit.PERCENTAGE);
+		Button saveBtn = new Button("Save");
+		Button cancelBtn = new Button("Reset");
+		
+		buttons.addComponent(saveBtn);
+		buttons.addComponent(cancelBtn);
+		buttons.setComponentAlignment(saveBtn, Alignment.MIDDLE_RIGHT);
+		buttons.setComponentAlignment(cancelBtn, Alignment.MIDDLE_LEFT);
+		buttons.setSpacing(true);
+		
+		formColumnLayout.addComponent(column1);
+		formColumnLayout.addComponent(column2);
+		clientDealInformation.addComponent(formColumnLayout);
+		clientDealInformation.addComponent(buttons);
+		
+		/* Deal Overview for deals*/
+		
+		CssLayout dealOverview = new CssLayout();
+			
+		tabs.addTab(dealOverview, "Deal Overview");
+		
+		/* Deal Product & Financials for deals*/
+		
+		CssLayout dealProductFinancials = new CssLayout();
+			
+		tabs.addTab(dealProductFinancials, "Deal Product & Financials");
+		
+		/* Deal Overview for deals*/
+		
+		CssLayout CDMCInformation = new CssLayout();
+			
+		tabs.addTab(CDMCInformation, "CDMC Information");
+		
+		container.addComponent(tabs);
+		setContent(container);
+		
+		//layout.addComponent(button);
+	}
+
+}
